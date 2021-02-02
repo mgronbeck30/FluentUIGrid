@@ -118,7 +118,7 @@ export class FluentGrid implements ComponentFramework.StandardControl<IInputs, I
 			simplifiedColumns.push({
 				key: column.name,
 				name: column.displayName,
-				fieldName: column.displayName,
+				fieldName: column.name,
 				minWidth: 100,
 				maxWidth: 200,
 				isCollapsible: true,

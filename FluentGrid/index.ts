@@ -16,6 +16,11 @@ interface whoAmIRequest {
 	getMetadata(): any;
 };
 
+interface ISimplifiedDataSet {
+	simplifiedColumns: IColumn[],
+	simplifiedRecords: any[]
+}
+
 export class FluentGrid implements ComponentFramework.StandardControl<IInputs, IOutputs> {
 
 	private _props: IDataSetProps;
@@ -24,8 +29,6 @@ export class FluentGrid implements ComponentFramework.StandardControl<IInputs, I
 	private _container: HTMLDivElement;
 	private _gridContainer: HTMLDivElement;
 	private _notifyOutputChanged: () => void;
-	private _simplifiedColumns: IColumn[] = [];
-	private _simplifiedRecords: any[] = [];
 	/**
 	 * Empty constructor.
 	 */
@@ -97,20 +100,22 @@ export class FluentGrid implements ComponentFramework.StandardControl<IInputs, I
 		container.appendChild(this._container);
 		this._notifyOutputChanged = notifyOutputChanged;
 		
-		this.simplifyDataSet(context);
+		let result = this.simplifyDataSet(context);
 		
 		this._props = {
-			cols: this._simplifiedColumns,
-			data: this._simplifiedRecords,
+			cols: result.simplifiedColumns,
+			data: result.simplifiedRecords,
 			onButtonClicked: this.buttonClick.bind(this)
 		}
 	}
 
 
-	private simplifyDataSet(context: ComponentFramework.Context<IInputs>): void {
+	private simplifyDataSet(context: ComponentFramework.Context<IInputs>): ISimplifiedDataSet {
+		let simplifiedColumns: IColumn[] = [];
+		let simplifiedRecords: any[] = [];
+
 		context.parameters.sampleDataSet.columns.forEach((column: DataSetInterfaces.Column) => {
-			debugger;
-			this._simplifiedColumns.push({
+			simplifiedColumns.push({
 				key: column.name,
 				name: column.displayName,
 				fieldName: column.displayName,
@@ -131,12 +136,16 @@ export class FluentGrid implements ComponentFramework.StandardControl<IInputs, I
 		context.parameters.sampleDataSet.sortedRecordIds.forEach((recordId) => {
 			let currentRecord = context.parameters.sampleDataSet.records[recordId];
 			let rec: any = {};
-			this._simplifiedColumns.forEach((column: IColumn) => {
+			debugger;
+			simplifiedColumns.forEach((column: IColumn) => {
 				rec[column.key] = currentRecord.getFormattedValue(column.name);
-				this._simplifiedRecords.push(rec);
+				simplifiedRecords.push(rec);
 			})
 		})
+
+		return { simplifiedColumns, simplifiedRecords };
 	}
+
 
 
 	/**

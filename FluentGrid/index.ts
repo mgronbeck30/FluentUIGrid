@@ -136,11 +136,10 @@ export class FluentGrid implements ComponentFramework.StandardControl<IInputs, I
 		context.parameters.sampleDataSet.sortedRecordIds.forEach((recordId) => {
 			let currentRecord = context.parameters.sampleDataSet.records[recordId];
 			let rec: any = {};
-			debugger;
 			simplifiedColumns.forEach((column: IColumn) => {
-				rec[column.key] = currentRecord.getFormattedValue(column.name);
-				simplifiedRecords.push(rec);
+				rec[column.key] = currentRecord.getFormattedValue(column.fieldName as string);
 			})
+			simplifiedRecords.push(rec);
 		})
 
 		return { simplifiedColumns, simplifiedRecords };
